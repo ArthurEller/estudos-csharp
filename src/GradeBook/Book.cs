@@ -3,44 +3,86 @@ using System;
 
 namespace GradeBook
 {
-    class Book
+    public class Book
     {
         public Book(string name)
         {
+            Name = name; //Name = associate, name = props do book
             grades = new List<double>();
-            this.name = name; //this.name = Referencia do book, name = associate
+        }
+        public void AddLetterGrade(char letter) {
+            switch (letter)
+            {
+                case 'A':
+                    AddGrade(90);
+                    break;
+
+                case 'B':
+                    AddGrade(80);
+                    break;
+
+                case 'C':
+                    AddGrade(70);
+                    break;
+
+                default:
+                    AddGrade(0);
+                    break;
+            }
         }
         public void AddGrade(double grade)
         {   
-            grades.Add(grade);
+            if (grade <= 100 && grade >= 0) { 
+                grades.Add(grade);
+            } else {
+               throw new ArgumentException($"Invalid {nameof(grade)}");
+            }
         }
 
-        public void ShowStatistics() 
+        public Statistics GetStatistics()
         {
-            var result = 0.0;
-            var highGrade = double.MinValue;
-            var lowGrade = double.MaxValue;
-            foreach (var note in grades)
-            {
-               highGrade = Math.Max(note, highGrade);
-               lowGrade = Math.Min(note, lowGrade);
+            var result = new Statistics();
+            result.Average = 0.0;
+            result.High = double.MinValue;
+            result.Low = double.MaxValue;
 
-               result += note;
+            foreach (var grade in grades)
+            {
+              
+               result.High = Math.Max(grade, result.High);
+               result.Low = Math.Min(grade, result.Low);
+               result.Average += grade;
             }
 
-            var media = result / grades.Count;
-            Console.WriteLine($"Nome do livro: {name}");
-            Console.WriteLine($"Rating total: {result}, media: {media:N1}");
-            Console.WriteLine($"Nota mais alta: {highGrade}, mais baixa: {lowGrade}");
+            result.Average /= grades.Count;
 
-            if (media < 60 )
+            switch(result.Average)
             {
-                Console.WriteLine("Livro com selo mediano!");
-            } else if (media > 80) {
-                Console.WriteLine("Livro altamente recomendado pelos criticos!");
+                case var d when d >= 90.0:
+                    result.Letter = 'A';
+                    break;
+                
+                case var d when d >= 80.0:
+                    result.Letter = 'B';
+                    break;
+
+                case var d when d >= 70.0:
+                    result.Letter = 'C';
+                    break;
+
+                case var d when d >= 60.0:
+                    result.Letter = 'D';
+                    break;
+
+                default:
+                    result.Letter = 'F';
+                    break;
             }
+
+            return result;
         }
+
         private List<double> grades;
-        private string name;
+        public string Name;
     }
 }
