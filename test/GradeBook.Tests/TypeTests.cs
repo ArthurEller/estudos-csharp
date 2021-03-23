@@ -2,21 +2,23 @@ using System;
 using Xunit;
 namespace GradeBook.Tests
 {
+    public delegate string WriteLogDelegate(string logMessage);
     public class TypeTests
     {
         [Fact]
-        public void StringsBehaveLikeValueTypes() 
+        public void WriteLogDelegateCanPointToMethod()
         {
-            string name = "Arthur";
-            var upper = MakeUppercase(name);
+            WriteLogDelegate log;
 
-            Assert.Equal("Arthur", name);
-            Assert.Equal("ARTHUR", upper);
+            log = ReturnMessage;
+
+            var result = log("Hello!");
+            Assert.Equal("Hello!", result);
         }
 
-        private string MakeUppercase(string name)
+        string ReturnMessage(string message)
         {
-           return name.ToUpper();
+            return message;
         }
 
         [Fact]
@@ -47,9 +49,9 @@ namespace GradeBook.Tests
             Assert.Equal("New Name", book1.Name);
         }
 
-        private void GetBookSetName(out Book book, string name)
+        private void GetBookSetName(out InMemoryBook book, string name)
         {
-            book = new Book(name);
+            book = new InMemoryBook(name);
         }
 
         [Fact]
@@ -61,9 +63,9 @@ namespace GradeBook.Tests
             Assert.Equal("Book1", book1.Name);
         }
 
-        private void GetBookSetName(Book book, string name)
+        private void GetBookSetName(InMemoryBook book, string name)
         {
-            book = new Book(name);
+            book = new InMemoryBook(name);
         }
 
 
@@ -76,7 +78,7 @@ namespace GradeBook.Tests
             Assert.Equal("New Name", book1.Name);
         }
 
-        private void SetName(Book book, string name)
+        private void SetName(InMemoryBook book, string name)
         {
             book.Name = name;
         }
@@ -100,9 +102,9 @@ namespace GradeBook.Tests
             Assert.Same(book1, book2);
             Assert.True(Object.ReferenceEquals(book1, book2));
         }
-        Book GetBook(string name)
+        InMemoryBook GetBook(string name)
         {
-            return new Book(name);
+            return new InMemoryBook(name);
         }
 
     }

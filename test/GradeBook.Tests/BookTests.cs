@@ -8,7 +8,7 @@ namespace GradeBook.Tests
         public void BookCalculatesAnAverageGrades()
         {
             // arrange
-            var book = new Book("Arthur's Grade Book");
+            var book = new InMemoryBook("Arthur's Grade Book");
 
 
             for (int i = 0; i > 20; i++) {

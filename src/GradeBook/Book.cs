@@ -3,14 +3,55 @@ using System;
 
 namespace GradeBook
 {
-    public class Book
+    public delegate void GradeAddedDelegate(object sender, EventArgs args);
+
+    public class NamedObject
     {
-        public Book(string name)
+        public NamedObject(string name)
+        {
+            Name = name;
+        }
+        public string Name
+        {
+            get;
+            set;
+        }
+    }
+
+    public interface IBook
+    {
+        void AddGrade(double grade);
+        Statistics GetStatistics();
+        string Name { get; }
+        event GradeAddedDelegate GradeAdded;
+    }
+
+    public abstract class Book : NamedObject, IBook
+    {
+        protected Book(string name) : base(name)
+        {
+        }
+
+        public virtual event GradeAddedDelegate GradeAdded;
+
+        public abstract void AddGrade(double grade);
+
+        public virtual Statistics GetStatistics()
+        {
+            throw new NotImplementedException();
+        }
+        
+    }
+
+    public class InMemoryBook : Book
+    {
+        public InMemoryBook(string name) : base(name)
         {
             Name = name; //Name = associate, name = props do book
             grades = new List<double>();
         }
-        public void AddLetterGrade(char letter) {
+        
+        public void AddGrade(char letter) {
             switch (letter)
             {
                 case 'A':
@@ -30,14 +71,20 @@ namespace GradeBook
                     break;
             }
         }
-        public void AddGrade(double grade)
+        public override void AddGrade(double grade)
         {   
             if (grade <= 100 && grade >= 0) { 
                 grades.Add(grade);
+                if(GradeAdded != null)
+                {
+                    GradeAdded(this, new EventArgs());
+                }
             } else {
                throw new ArgumentException($"Invalid {nameof(grade)}");
             }
         }
+
+        public override event GradeAddedDelegate GradeAdded;
 
         public Statistics GetStatistics()
         {
@@ -83,6 +130,7 @@ namespace GradeBook
         }
 
         private List<double> grades;
-        public string Name;
+
+        public const string CATEGORY = "Science";
     }
 }
